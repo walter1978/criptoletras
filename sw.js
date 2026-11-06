@@ -1,4 +1,4 @@
-﻿const CACHE_VERSION = '1.0.2';
+﻿const CACHE_VERSION = '1.0.3';
 const CACHE_NAME = `cripto-pwa-v${CACHE_VERSION}`;
 
 const PRECACHE_ASSETS = [
@@ -79,3 +79,4 @@ self.addEventListener('fetch', (e) => {
         })
     );
 });
+
