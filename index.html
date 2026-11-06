@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a110a">
+    <title>CriptoLetras</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="js/texts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+</head>
+<body>
+
+    <!-- Indicador de versión visible en toda la aplicación -->
+    <div id="app-version">v1.0.2</div>
+
+    <!-- Pantalla de bienvenida estilo Biblioteca Clásica -->
+    <div id="welcome-screen" class="hidden">
+        <h1 id="welcome-title" class="header-title"></h1>
+        <div id="welcome-sub" class="header-sub"></div>
+
+        <div class="modes-grid">
+            <div class="mode-card active">
+                <div class="mode-icon">📖</div>
+                <div id="mode-quotes-title" class="mode-title"></div>
+                <div id="mode-quotes-desc" class="mode-desc"></div>
+                <button id="mode-quotes-btn" class="mode-btn" onclick="startGame()"></button>
+            </div>
+
+            <div class="mode-card coming">
+                <div class="badge-soon"></div>
+                <div class="mode-icon">✍️</div>
+                <div id="mode-authors-title" class="mode-title"></div>
+                <div id="mode-authors-desc" class="mode-desc"></div>
+            </div>
+
+            <div class="mode-card coming">
+                <div class="badge-soon"></div>
+                <div class="mode-icon">📜</div>
+                <div id="mode-rhymes-title" class="mode-title"></div>
+                <div id="mode-rhymes-desc" class="mode-desc"></div>
+            </div>
+        </div>
+
+        <div class="action-panel">
+            <button id="btnPlayWeb" class="welcome-btn" onclick="startGame()"></button>
+            <button id="btnInstall" class="welcome-btn btn-install"></button>
+            <div id="features-txt" class="features-txt"></div>
+            <div id="msgStatus"></div>
+        </div>
+    </div>
+
+    <div id="game-container"></div>
+
+    <script>
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const btnInstall = document.getElementById('btnInstall');
+        const msgStatus = document.getElementById('msgStatus');
+        let deferredPrompt = null;
+
+        function applyTexts() {
+            document.title = TEXTS.appTitle;
+            document.getElementById('welcome-title').textContent = TEXTS.welcome.headerTitle;
+            document.getElementById('welcome-sub').textContent = TEXTS.welcome.headerSub;
+            document.getElementById('mode-quotes-title').textContent = TEXTS.welcome.modeQuotesTitle;
+            document.getElementById('mode-quotes-desc').textContent = TEXTS.welcome.modeQuotesDesc;
+            document.getElementById('mode-quotes-btn').textContent = TEXTS.welcome.modeQuotesBtn;
+            document.querySelectorAll('.badge-soon').forEach(el => el.textContent = TEXTS.welcome.badgeSoon);
+            document.getElementById('mode-authors-title').textContent = TEXTS.welcome.modeAuthorsTitle;
+            document.getElementById('mode-authors-desc').textContent = TEXTS.welcome.modeAuthorsDesc;
+            document.getElementById('mode-rhymes-title').textContent = TEXTS.welcome.modeRhymesTitle;
+            document.getElementById('mode-rhymes-desc').textContent = TEXTS.welcome.modeRhymesDesc;
+            document.getElementById('btnPlayWeb').textContent = TEXTS.welcome.btnPlayWeb;
+            document.getElementById('btnInstall').textContent = TEXTS.welcome.btnInstall;
+            document.getElementById('features-txt').textContent = TEXTS.welcome.featuresTxt;
+        }
+        applyTexts();
+
+        const GAME_SCRIPTS = [
+            'js/utils.js',
+            'js/ProgressManager.js',
+            'js/scenes/BootScene.js',
+            'js/scenes/MenuScene.js',
+            'js/scenes/ProgressScene.js',
+            'js/scenes/GameScene.js',
+            'js/main.js'
+        ];
+
+        let gameStarted = false;
+
+        function startGame() {
+            if (gameStarted) return;
+            gameStarted = true;
+            welcomeScreen.classList.add('hidden');
+            GAME_SCRIPTS.forEach((src) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.async = false;
+                document.body.appendChild(script);
+            });
+        }
+
+        const mqStandalone = window.matchMedia('(display-mode: standalone)');
+        const mqFullscreen = window.matchMedia('(display-mode: fullscreen)');
+
+        function isStandaloneNow() {
+            return mqStandalone.matches ||
+                   mqFullscreen.matches ||
+                   window.navigator.standalone === true ||
+                   new URLSearchParams(window.location.search).get('source') === 'pwa';
+        }
+
+        function enterGameIfInstalled() {
+            if (isStandaloneNow()) startGame();
+        }
+
+        [mqStandalone, mqFullscreen].forEach((mq) => {
+            if (mq.addEventListener) mq.addEventListener('change', enterGameIfInstalled);
+            else if (mq.addListener) mq.addListener(enterGameIfInstalled);
+        });
+
+        if (isStandaloneNow()) {
+            startGame();
+        } else {
+            welcomeScreen.classList.remove('hidden');
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            msgStatus.textContent = "";
+        });
+
+        btnInstall.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+                    msgStatus.innerHTML = TEXTS.welcome.msgIosInstall;
+                } else {
+                    msgStatus.innerHTML = TEXTS.welcome.msgOtherInstall;
+                }
+                return;
+            }
+
+            btnInstall.classList.add('hidden');
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+
+            if (outcome === 'accepted') {
+                if (isStandaloneNow()) { startGame(); return; }
+                msgStatus.innerHTML = TEXTS.welcome.msgInstalled;
+                setTimeout(enterGameIfInstalled, 800);
+            } else {
+                btnInstall.classList.remove('hidden');
+                msgStatus.textContent = "";
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            if (isStandaloneNow()) { startGame(); return; }
+            btnInstall.classList.add('hidden');
+            msgStatus.innerHTML = TEXTS.welcome.msgInstalled;
+            setTimeout(enterGameIfInstalled, 800);
+        });
+
+        // Registro de Service Worker con auto-actualización inmediata (iOS y Android)
+        if ('serviceWorker' in navigator) {
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
+            });
+
+            navigator.serviceWorker.register('./sw.js').then((reg) => {
+                reg.update();
+
+                // Verificar actualizaciones al volver de segundo plano en móviles
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible') {
+                        reg.update();
+                    }
+                });
+
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                newWorker.postMessage({ action: 'skipWaiting' });
+                            }
+                        });
+                    }
+                });
+            }).catch((err) => {
+                console.warn('Error registrando ServiceWorker:', err);
+            });
+        }
+    </script>
+</body>
+</html>

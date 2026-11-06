@@ -1,0 +1,209 @@
+/* Estilos generales del contenedor del juego y la PWA */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    background-color: #1a110a;
+    overflow: hidden;
+    font-family: serif;
+    color: #fff8ea;
+}
+
+#game-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Indicador de versión visible en la esquina inferior izquierda */
+#app-version {
+    position: fixed;
+    bottom: 4px;
+    left: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(243, 229, 171, 0.45);
+    z-index: 99999;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: 0.5px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Pantalla de bienvenida estilo biblioteca */
+#welcome-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, #2b1b11 0%, #130a05 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    z-index: 10000;
+    font-family: 'Georgia', 'Garamond', serif;
+    color: #fff8ea;
+    overflow-y: auto;
+    padding: 30px 15px;
+}
+
+.header-title {
+    font-size: 2.2rem;
+    color: #f3e5ab;
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    font-weight: bold;
+}
+
+.header-sub {
+    font-size: 1.05rem;
+    color: #d7ccc8;
+    text-align: center;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+.modes-grid {
+    display: flex;
+    gap: 15px;
+    max-width: 900px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.mode-card {
+    background: #251810;
+    border: 2px solid #8d6e63;
+    border-radius: 12px;
+    padding: 20px;
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    position: relative;
+}
+
+.mode-card.active {
+    border-color: #d97706;
+    background: #2d1e14;
+}
+
+.mode-card.coming {
+    opacity: 0.75;
+}
+
+.badge-soon {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #4a3525;
+    color: #f3e5ab;
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: sans-serif;
+    border: 1px solid #8d6e63;
+}
+
+.mode-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.mode-title {
+    font-size: 1.25rem;
+    color: #f3e5ab;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.mode-desc {
+    font-size: 0.88rem;
+    color: #d7ccc8;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+
+.mode-btn {
+    background: #5a341e;
+    color: #fff8ea;
+    border: 1.5px solid #d97706;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Georgia', serif;
+    transition: background 0.2s;
+}
+
+.mode-btn:hover {
+    background: #784424;
+}
+
+.action-panel {
+    background: #1e130d;
+    border: 2px solid #d97706;
+    border-radius: 12px;
+    padding: 20px 30px;
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+    margin-bottom: 20px;
+}
+
+.welcome-btn {
+    background: #5a341e;
+    color: #fff8ea;
+    border: 2px solid #d97706;
+    padding: 12px 28px;
+    font-family: 'Georgia', serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    margin: 6px;
+    transition: background 0.2s;
+}
+
+.welcome-btn:hover {
+    background: #784424;
+}
+
+.btn-install {
+    background: #2a1c12;
+    border-color: #8d6e63;
+}
+
+.features-txt {
+    font-size: 0.85rem;
+    color: #b0a095;
+    margin-top: 10px;
+    font-family: sans-serif;
+}
+
+#msgStatus {
+    font-size: 0.95rem;
+    color: #f3e5ab;
+    margin-top: 12px;
+    font-style: italic;
+}
